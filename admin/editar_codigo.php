@@ -1,6 +1,6 @@
 <?php
-require_once 'includes/header.php';
-require_once 'core/db_connect.php';
+require_once '../includes/header.php';
+require_once '../core/db_connect.php';
 
 $feedback_message = '';
 $feedback_class = '';
@@ -104,5 +104,5 @@ $leyes_ya_asociadas_ids = $stmt_asociadas->fetchAll(PDO::FETCH_COLUMN, 0);
 </div>
 
 <?php
-require_once 'includes/footer.php';
+require_once '../includes/footer.php';
 ?>

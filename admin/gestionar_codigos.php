@@ -1,6 +1,6 @@
 <?php
-require_once 'includes/header.php';
-require_once 'core/db_connect.php';
+require_once '../includes/header.php';
+require_once '../core/db_connect.php';
 
 $feedback_message = '';
 $feedback_class = '';
@@ -95,5 +95,5 @@ $codigos = $stmt_codigos->fetchAll();
 </div>
 
 <?php
-require_once 'includes/footer.php';
+require_once '../includes/footer.php';
 ?>
