@@ -48,7 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($migration_sql === false) throw new Exception("No se pudo leer el archivo migration_add_codes.sql");
             $pdo->exec($migration_sql);
 
-            // 7. Crear el archivo de configuración core/db_connect.php
+            // 7. Leer y ejecutar migration_add_config_table.sql
+            $config_migration_sql = file_get_contents('migration_add_config_table.sql');
+            if ($config_migration_sql === false) throw new Exception("No se pudo leer el archivo migration_add_config_table.sql");
+            $pdo->exec($config_migration_sql);
+
+            // 8. Crear el archivo de configuración core/db_connect.php
             $config_content = "<?php
 // Detalles de la conexión a la base de datos
 \$host = '$dbhost';
