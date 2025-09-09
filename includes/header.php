@@ -20,9 +20,11 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="index.php">Inicio</a>
+          <a class="nav-link" href="index.php">Inicio</a>
         </li>
-        <!-- Más enlaces se pueden añadir aquí en el futuro -->
+        <li class="nav-item">
+          <a class="nav-link" href="gestionar_codigos.php">Gestionar Códigos</a>
+        </li>
       </ul>
     </div>
   </div>
