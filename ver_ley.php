@@ -82,6 +82,51 @@ try {
         echo '</div>';
         echo '<hr>';
 
+        // --- INICIO: Formulario de comparación de versiones ---
+        $stmt_versiones = $pdo->prepare("SELECT id, titulo_version, fecha_version FROM versiones WHERE ley_id = :ley_id ORDER BY fecha_version DESC");
+        $stmt_versiones->execute(['ley_id' => $ley_id]);
+        $todas_las_versiones = $stmt_versiones->fetchAll();
+
+        if (count($todas_las_versiones) > 1) {
+            echo '<div class="card bg-light mb-4">';
+            echo '  <div class="card-body">';
+            echo '    <h5 class="card-title">Comparar Versiones</h5>';
+            echo '    <form action="comparar_versiones.php" method="get" class="row g-3 align-items-end">';
+            echo '      <input type="hidden" name="ley_id" value="' . htmlspecialchars($ley_id) . '">';
+
+            // Dropdown para Versión A
+            echo '      <div class="col-md-5">';
+            echo '        <label for="version_a" class="form-label">Comparar versión:</label>';
+            echo '        <select name="version_a" id="version_a" class="form-select">';
+            foreach ($todas_las_versiones as $v) {
+                echo '          <option value="' . htmlspecialchars($v['id']) . '">' . htmlspecialchars($v['titulo_version']) . ' (' . htmlspecialchars($v['fecha_version']) . ')</option>';
+            }
+            echo '        </select>';
+            echo '      </div>';
+
+            // Dropdown para Versión B
+            echo '      <div class="col-md-5">';
+            echo '        <label for="version_b" class="form-label">Con versión:</label>';
+            echo '        <select name="version_b" id="version_b" class="form-select">';
+            // Seleccionar la segunda más reciente por defecto, si existe
+            $segunda_opcion_seleccionada = false;
+            foreach ($todas_las_versiones as $v) {
+                echo '          <option value="' . htmlspecialchars($v['id']) . '"' . (!$segunda_opcion_seleccionada ? ' selected' : '') . '>' . htmlspecialchars($v['titulo_version']) . ' (' . htmlspecialchars($v['fecha_version']) . ')</option>';
+                $segunda_opcion_seleccionada = true; // Solo la primera vez
+            }
+            echo '        </select>';
+            echo '      </div>';
+
+            // Botón de envío
+            echo '      <div class="col-md-2">';
+            echo '        <button type="submit" class="btn btn-primary w-100">Comparar</button>';
+            echo '      </div>';
+            echo '    </form>';
+            echo '  </div>';
+            echo '</div>';
+        }
+        // --- FIN: Formulario de comparación de versiones ---
+
         if (empty($articulos)) {
             echo '<div class="alert alert-info">Esta versión de la ley no tiene artículos registrados.</div>';
         } else {
