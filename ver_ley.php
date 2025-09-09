@@ -73,7 +73,12 @@ try {
 
         // 3. Mostrar el contenido de la ley.
         echo '<div class="card">';
-        echo '  <div class="card-header"><h2>' . htmlspecialchars($ley_info['titulo']) . '</h2></div>';
+        echo '  <div class="card-header d-flex justify-content-between align-items-center">';
+        echo '      <h2>' . htmlspecialchars($ley_info['titulo']) . '</h2>';
+        echo '      <a href="generar_pdf.php?ley_id=' . htmlspecialchars($ley_id) . '&version_id=' . htmlspecialchars($version_id) . '" class="btn btn-danger" target="_blank">';
+        echo '          <i class="bi bi-file-earmark-pdf-fill me-2"></i>Descargar PDF';
+        echo '      </a>';
+        echo '  </div>';
         echo '  <div class="card-body">';
         echo '    <h5 class="card-title">Versión: ' . htmlspecialchars($ley_info['titulo_version']) . '</h5>';
         echo '    <p class="card-text"><strong>Número de Ley:</strong> ' . htmlspecialchars($ley_info['numero_ley']) . '<br>';
