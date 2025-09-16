@@ -1,4 +1,5 @@
 <?php
+require_once 'auth/check_auth.php';
 require_once 'includes/header.php';
 require_once 'core/db_connect.php';
 
@@ -37,56 +38,57 @@ $codigos = $stmt_codigos->fetchAll();
 ?>
 
 <div class="container mt-4">
-    <h1>Gestionar Códigos</h1>
-    <p>Aquí puedes crear nuevos códigos para agrupar leyes y ver los existentes.</p>
-
-    <?php if ($feedback_message): ?>
-        <div class="alert <?php echo $feedback_class; ?>" role="alert">
-            <?php echo $feedback_message; ?>
-        </div>
-    <?php endif; ?>
-
     <div class="row">
-        <!-- Columna para crear códigos -->
-        <div class="col-md-4">
-            <div class="card">
+        <div class="col-md-5">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header">
-                    Crear Nuevo Código
+                    <h4 class="my-0 fw-normal">Crear Nuevo Código</h4>
                 </div>
                 <div class="card-body">
+                    <?php if ($feedback_message): ?>
+                        <div class="alert <?php echo $feedback_class; ?>" role="alert">
+                            <?php echo $feedback_message; ?>
+                        </div>
+                    <?php endif; ?>
                     <form action="gestionar_codigos.php" method="post">
                         <div class="mb-3">
                             <label for="titulo" class="form-label">Título del Código</label>
                             <input type="text" class="form-control" id="titulo" name="titulo" required>
                         </div>
-                        <button type="submit" name="crear_codigo" class="btn btn-primary">Crear</button>
+                        <button type="submit" name="crear_codigo" class="btn btn-primary w-100">Crear Código</button>
                     </form>
                 </div>
             </div>
         </div>
-
-        <!-- Columna para listar códigos -->
-        <div class="col-md-8">
-            <div class="card">
+        <div class="col-md-7">
+            <div class="card shadow-sm">
                 <div class="card-header">
-                    Códigos Existentes
+                    <h4 class="my-0 fw-normal">Códigos Existentes</h4>
                 </div>
                 <div class="card-body">
                     <?php if (empty($codigos)): ?>
-                        <p>No hay códigos creados todavía.</p>
+                        <div class="alert alert-info">No hay códigos creados todavía.</div>
                     <?php else: ?>
-                        <ul class="list-group">
-                            <?php foreach ($codigos as $codigo): ?>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <?php echo htmlspecialchars($codigo['titulo']); ?>
-                                        <br>
-                                        <small class="text-muted">Creado: <?php echo date('d/m/Y', strtotime($codigo['created_at'])); ?></small>
-                                    </div>
-                                    <a href="editar_codigo.php?id=<?php echo htmlspecialchars($codigo['id']); ?>" class="btn btn-secondary btn-sm">Asociar Leyes</a>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Título</th>
+                                    <th scope="col">Fecha de Creación</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($codigos as $codigo): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($codigo['titulo']); ?></td>
+                                        <td><?php echo date('d/m/Y', strtotime($codigo['created_at'])); ?></td>
+                                        <td>
+                                            <a href="editar_codigo.php?id=<?php echo htmlspecialchars($codigo['id']); ?>" class="btn btn-secondary btn-sm">Asociar Leyes</a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     <?php endif; ?>
                 </div>
             </div>

@@ -1,4 +1,5 @@
 <?php
+require_once 'auth/check_auth.php';
 require_once 'includes/header.php';
 require_once 'core/db_connect.php';
 

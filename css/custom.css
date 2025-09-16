@@ -1,0 +1,32 @@
+/* Custom CSS for Leyes Consolidadas */
+
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    margin-bottom: 2rem;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.list-group-item-action {
+    transition: background-color 0.2s;
+}
+
+.list-group-item-action:hover {
+    background-color: #f1f1f1;
+}
+
+.accordion-button:not(.collapsed) {
+    color: #0c63e4;
+    background-color: #e7f1ff;
+}

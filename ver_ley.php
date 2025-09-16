@@ -70,98 +70,89 @@ try {
                 ];
             }
         }
+?>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header"><h2><?php echo htmlspecialchars($ley_info['titulo']); ?></h2></div>
+                    <div class="card-body">
+                        <h5 class="card-title">Versión: <?php echo htmlspecialchars($ley_info['titulo_version']); ?></h5>
+                        <p class="card-text"><strong>Número de Ley:</strong> <?php echo htmlspecialchars($ley_info['numero_ley']); ?><br>
+                        <strong>Fecha de la versión:</strong> <?php echo htmlspecialchars($ley_info['fecha_version']); ?></p>
+                    </div>
+                </div>
 
-        // 3. Mostrar el contenido de la ley.
-        echo '<div class="card">';
-        echo '  <div class="card-header"><h2>' . htmlspecialchars($ley_info['titulo']) . '</h2></div>';
-        echo '  <div class="card-body">';
-        echo '    <h5 class="card-title">Versión: ' . htmlspecialchars($ley_info['titulo_version']) . '</h5>';
-        echo '    <p class="card-text"><strong>Número de Ley:</strong> ' . htmlspecialchars($ley_info['numero_ley']) . '<br>';
-        echo '    <strong>Fecha de la versión:</strong> ' . htmlspecialchars($ley_info['fecha_version']) . '</p>';
-        echo '  </div>';
-        echo '</div>';
-        echo '<hr>';
+                <h3 class="mt-4">Contenido de la Ley</h3>
+                <?php if (empty($articulos)): ?>
+                    <div class="alert alert-info">Esta versión de la ley no tiene artículos registrados.</div>
+                <?php else: ?>
+                    <div class="accordion" id="accordionLey">
+                        <?php foreach ($articulos as $articulo_id => $articulo):
+                            $id_html = "articulo-" . $articulo_id;
+                        ?>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading-<?php echo $id_html; ?>">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-<?php echo $id_html; ?>" aria-expanded="false" aria-controls="collapse-<?php echo $id_html; ?>">
+                                        <strong>Artículo <?php echo htmlspecialchars($articulo['numero_articulo']); ?>.</strong> <?php echo htmlspecialchars($articulo['titulo_articulo']); ?>
+                                    </button>
+                                </h2>
+                                <div id="collapse-<?php echo $id_html; ?>" class="accordion-collapse collapse" aria-labelledby="heading-<?php echo $id_html; ?>" data-bs-parent="#accordionLey">
+                                    <div class="accordion-body">
+                                        <?php if (empty($articulo['secciones'])): ?>
+                                            Este artículo no tiene contenido detallado.
+                                        <?php else: ?>
+                                            <?php foreach ($articulo['secciones'] as $seccion): ?>
+                                                <p><strong><?php echo htmlspecialchars($seccion['tipo']); ?> <?php echo htmlspecialchars($seccion['identificador']); ?>.</strong> <?php echo nl2br(htmlspecialchars($seccion['contenido'])); ?></p>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
 
-        // --- INICIO: Formulario de comparación de versiones ---
-        $stmt_versiones = $pdo->prepare("SELECT id, titulo_version, fecha_version FROM versiones WHERE ley_id = :ley_id ORDER BY fecha_version DESC");
-        $stmt_versiones->execute(['ley_id' => $ley_id]);
-        $todas_las_versiones = $stmt_versiones->fetchAll();
+            <div class="col-md-4">
+                <?php
+                $stmt_versiones = $pdo->prepare("SELECT id, titulo_version, fecha_version FROM versiones WHERE ley_id = :ley_id ORDER BY fecha_version DESC");
+                $stmt_versiones->execute(['ley_id' => $ley_id]);
+                $todas_las_versiones = $stmt_versiones->fetchAll();
 
-        if (count($todas_las_versiones) > 1) {
-            echo '<div class="card bg-light mb-4">';
-            echo '  <div class="card-body">';
-            echo '    <h5 class="card-title">Comparar Versiones</h5>';
-            echo '    <form action="comparar_versiones.php" method="get" class="row g-3 align-items-end">';
-            echo '      <input type="hidden" name="ley_id" value="' . htmlspecialchars($ley_id) . '">';
-
-            // Dropdown para Versión A
-            echo '      <div class="col-md-5">';
-            echo '        <label for="version_a" class="form-label">Comparar versión:</label>';
-            echo '        <select name="version_a" id="version_a" class="form-select">';
-            foreach ($todas_las_versiones as $v) {
-                echo '          <option value="' . htmlspecialchars($v['id']) . '">' . htmlspecialchars($v['titulo_version']) . ' (' . htmlspecialchars($v['fecha_version']) . ')</option>';
-            }
-            echo '        </select>';
-            echo '      </div>';
-
-            // Dropdown para Versión B
-            echo '      <div class="col-md-5">';
-            echo '        <label for="version_b" class="form-label">Con versión:</label>';
-            echo '        <select name="version_b" id="version_b" class="form-select">';
-            // Seleccionar la segunda más reciente por defecto, si existe
-            $segunda_opcion_seleccionada = false;
-            foreach ($todas_las_versiones as $v) {
-                echo '          <option value="' . htmlspecialchars($v['id']) . '"' . (!$segunda_opcion_seleccionada ? ' selected' : '') . '>' . htmlspecialchars($v['titulo_version']) . ' (' . htmlspecialchars($v['fecha_version']) . ')</option>';
-                $segunda_opcion_seleccionada = true; // Solo la primera vez
-            }
-            echo '        </select>';
-            echo '      </div>';
-
-            // Botón de envío
-            echo '      <div class="col-md-2">';
-            echo '        <button type="submit" class="btn btn-primary w-100">Comparar</button>';
-            echo '      </div>';
-            echo '    </form>';
-            echo '  </div>';
-            echo '</div>';
-        }
-        // --- FIN: Formulario de comparación de versiones ---
-
-        if (empty($articulos)) {
-            echo '<div class="alert alert-info">Esta versión de la ley no tiene artículos registrados.</div>';
-        } else {
-            echo '<h3>Contenido de la Ley</h3>';
-            echo '<div class="accordion" id="accordionLey">';
-
-            foreach ($articulos as $articulo_id => $articulo) {
-                $id_html = "articulo-" . $articulo_id;
-                echo '<div class="accordion-item">';
-                echo '  <h2 class="accordion-header" id="heading-' . $id_html . '">';
-                echo '    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-' . $id_html . '" aria-expanded="false" aria-controls="collapse-' . $id_html . '">';
-                echo '      <strong>Artículo ' . htmlspecialchars($articulo['numero_articulo']) . '.</strong> ' . htmlspecialchars($articulo['titulo_articulo']);
-                echo '    </button>';
-                echo '  </h2>';
-                echo '  <div id="collapse-' . $id_html . '" class="accordion-collapse collapse" aria-labelledby="heading-' . $id_html . '" data-bs-parent="#accordionLey">';
-                echo '    <div class="accordion-body">';
-
-                if (empty($articulo['secciones'])) {
-                    echo 'Este artículo no tiene contenido detallado.';
-                } else {
-                    foreach ($articulo['secciones'] as $seccion) {
-                        echo '<p><strong>' . htmlspecialchars($seccion['tipo']) . ' ' . htmlspecialchars($seccion['identificador']) . '.</strong> ' . nl2br(htmlspecialchars($seccion['contenido'])) . '</p>';
-                    }
-                }
-
-                echo '    </div>';
-                echo '  </div>';
-                echo '</div>';
-            }
-
-            echo '</div>'; // Cierre de accordion
-        }
-
+                if (count($todas_las_versiones) > 1):
+                ?>
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">Comparar Versiones</h5>
+                            <form action="comparar_versiones.php" method="get">
+                                <input type="hidden" name="ley_id" value="<?php echo htmlspecialchars($ley_id); ?>">
+                                <div class="mb-3">
+                                    <label for="version_a" class="form-label">Comparar versión:</label>
+                                    <select name="version_a" id="version_a" class="form-select">
+                                        <?php foreach ($todas_las_versiones as $v): ?>
+                                            <option value="<?php echo htmlspecialchars($v['id']); ?>"><?php echo htmlspecialchars($v['titulo_version']); ?> (<?php echo htmlspecialchars($v['fecha_version']); ?>)</option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="version_b" class="form-label">Con versión:</label>
+                                    <select name="version_b" id="version_b" class="form-select">
+                                        <?php
+                                        $segunda_opcion_seleccionada = false;
+                                        foreach ($todas_las_versiones as $v): ?>
+                                            <option value="<?php echo htmlspecialchars($v['id']); ?>" <?php if (!$segunda_opcion_seleccionada) { echo 'selected'; $segunda_opcion_seleccionada = true; } ?>><?php echo htmlspecialchars($v['titulo_version']); ?> (<?php echo htmlspecialchars($v['fecha_version']); ?>)</option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Comparar</button>
+                            </form>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+<?php
     }
-
 } catch (PDOException $e) {
     echo '<div class="alert alert-danger">Error al consultar la base de datos: ' . $e->getMessage() . '</div>';
 }
